@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <title>game</title>
+        <link rel="stylesheet" href="style.css" />
+        
+    </head>
+    <body>
+        <div class="header">
+            <h1>落ちものパズル</h1>
+            <div class="score">
+                スコア:<span id="tokuten">0</span>
+            </div>
+        </div>
+        <canvas id="back" width="240" height="440"></canvas>
+        <canvas id="game" width="240" height="440"></canvas>
+        <canvas id="tsugi" width="80" height="80"></canvas>
+        <button id="kaishibtn" onclick="gamekaishi()">ゲーム<br>スタート</button>
+        <footer>
+            <small>&copy; 2019 Seiichi Nukayama</small>
+        </footer>
+        <audio id="kaiten" preload="auto" src="oto/kaiten.mp3"></audio>
+        <audio id="ochiru" preload="auto" src="oto/ochiru.mp3"></audio>
+        <audio id="don" preload="auto" src="oto/don.mp3"></audio>
+        <audio id="kieru" preload="auto" src="oto/kieru.mp3"></audio>
+        <audio id="zenbu" preload="auto" src="oto/zenbu.mp3"></audio>
+        <audio id="gameover" preload="auto" src="oto/gameover.mp3"></audio>
+        <script src="program.js"></script>
+    </body>
+</html>
