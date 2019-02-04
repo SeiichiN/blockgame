@@ -6,6 +6,40 @@ var block = [
     [0, 0, 0, 0]
 ];
 
+/**
+ * ブロックを消す
+ */
+function kesu(cv, x, y) {
+    // 消す処理にする
+    cv.globalCompositeOperation = 'destination-out';
+    // 描く処理と同じだが、実際は消える。
+    kaku(cv, x, y);
+    // 元にもどす
+    cv.globalcompositeOperation = 'source-over';
+}
+
+
+/**
+ * ブロックを描く
+ * @param: cv -- canvas
+ *         x  -- ブロックを描くx座標
+ *         y  -- ブロックを描くy座標
+ */
+function kaku(cv, x, y) {
+
+	cv.fillStyle = '#cc00cc';
+	cv.strokeStyle = '#aaaaaa';
+    cv.lineWidth = 3;
+
+    for (i = 0; i < 4; i++) {
+        for (t = 0; t < 4; t++) {
+            if (block[i][t] === 1) {
+                cv.fillRect((x + t) * 20, (y + i) * 20, 20, 20);
+                cv.strokeRect((x + t) * 20, (y + i) * 20, 20, 20);
+            }
+        }
+    }
+}
 
 function gamekaishi() {
 	var x, y, i, t,
@@ -17,20 +51,14 @@ function gamekaishi() {
 
     cg =gamegamen.getContext('2d');
 
-	x = 4;
-	y = 0;
+    // 画面を消す
+    cg.clearRect(0, 0, 239, 439);
+    
+    x = 4;
+    y = 0;
+    
+    kaku(cg, x, y);
 
-	cg.fillStyle = '#cc00cc';
-	cg.strokeStyle = '#aaaaaa';
-
-    for (i = 0; i < 4; i++) {
-        for (t = 0; t < 4; t++) {
-            if (block[i][t] === 1) {
-                cg.fillRect((x + t) * 20, (y + i) * 20, 20, 20);
-                cg.strokeRect((x + t) * 20, (y + i) * 20, 20, 20);
-            }
-        }
-    }
     /*
 	cg.fillRect(x * 20, y, 20, 20);
 	cg.strokeRect(x * 20, y, 20, 20);
