@@ -1,5 +1,33 @@
 // program.js
 
+function gamekaishi() {
+	var x, y,
+		gamegamen, cg;
+	
+    // Canvasを取得
+    gamegamen = document.getElementById('game');
+
+    cg =gamegamen.getContext('2d');
+
+	x = 4;
+	y = 0;
+
+	cg.fillStyle = '#cc00cc';
+	cg.strokeStyle = '#aaaaaa';
+
+	cg.fillRect(x * 20, y, 20, 20);
+	cg.strokeRect(x * 20, y, 20, 20);
+
+	cg.fillRect((x + 1) * 20, y, 20, 20);
+	cg.strokeRect((x + 1) * 20, y, 20, 20);
+
+	cg.fillRect((x + 2)   * 20, y, 20, 20);
+	cg.strokeRect((x + 2) * 20, y, 20, 20);
+
+	cg.fillRect((x  + 1) * 20, (y + 1) * 20, 20, 20);
+	cg.strokeRect((x + 1) * 20, (y + 1) * 20, 20, 20);
+}
+
 function hajime() {
 
     var backgamen,
