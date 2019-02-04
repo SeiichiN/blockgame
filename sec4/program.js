@@ -1,10 +1,16 @@
 // program.js
-
+var block = [
+    [0, 0, 0, 0],
+    [1, 1, 1, 0],
+    [0, 1, 0, 0],
+    [0, 0, 0, 0]
+];
 
 
 function gamekaishi() {
-	var x, y,
+	var x, y, i, t,
 		gamegamen, cg;
+
 	
     // Canvasを取得
     gamegamen = document.getElementById('game');
@@ -17,6 +23,15 @@ function gamekaishi() {
 	cg.fillStyle = '#cc00cc';
 	cg.strokeStyle = '#aaaaaa';
 
+    for (i = 0; i < 4; i++) {
+        for (t = 0; t < 4; t++) {
+            if (block[i][t] === 1) {
+                cg.fillRect((x + t) * 20, (y + i) * 20, 20, 20);
+                cg.strokeRect((x + t) * 20, (y + i) * 20, 20, 20);
+            }
+        }
+    }
+    /*
 	cg.fillRect(x * 20, y, 20, 20);
 	cg.strokeRect(x * 20, y, 20, 20);
 
@@ -28,6 +43,7 @@ function gamekaishi() {
 
 	cg.fillRect((x  + 1) * 20, (y + 1) * 20, 20, 20);
 	cg.strokeRect((x + 1) * 20, (y + 1) * 20, 20, 20);
+    */
 }
 
 function hajime() {
