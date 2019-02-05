@@ -1,0 +1,43 @@
+@charset "utf-8";
+
+.header {
+    position: absolute;
+    left: 20px;
+    top: 10px;
+}
+.score {
+    width: 380px;
+}
+#back,
+#game {
+    position: absolute;
+    left: 20px;
+    top: 150px;
+}
+#back {
+    background-color: #000;
+}
+#game {
+    background-color: transparent;
+}
+#tsugi {
+    position: absolute;
+    left: 300px;
+    top: 150px;
+    background-color: #000;
+}
+#kaishibtn {
+    position: absolute;
+    left: 300px;
+    top: 300px;
+    width: 80px;
+    height: 50px;
+    padding: 0;
+    font-size: 0.8em;
+}
+footer {
+    position: absolute;
+    top: 600px;
+    left: 20px;
+}
+
