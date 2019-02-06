@@ -217,16 +217,22 @@ function otoOchiru() {
  */
 function kakunin(col, row) {
 	var x, y;
+	var hantei = true;
+	var thisBlock = block[syurui][muki];
 
-	for (x = col; x < col + 4; x++) {
-		for (y = row; y < row + 4; y++) {
-			if (joutai[x][y] !== 100) {
+	for (y = row; y < row + 4; y++) {
+		for (x = col; x < col + 4; x++) {
+			console.log(joutai[y][x]);	
+			console.log(thisBlock[y][x]);
+			if ((joutai[y][x] !== 100) &&
+				(thisBlock[y][x] === 1)){
 				// ここへは移動できない
-				return false;
+				hantei = false;
 			}
 		}
 	}
-	return true;
+	console.log(hantei);
+	return hantei;
 
 	/*
 	var cells = joutai.find((ele) => {
@@ -332,6 +338,16 @@ function kaku(cv, x, y, syurui, muki) {
 	}
 }
 
+function printJoutai() {
+	var i, j;
+
+	for (i = 0; i < 22; i++) {
+		for (j = 0; j < 12; j++) {
+			 console.log(joutai[i][j]);
+		}
+	}
+}
+
 /**
  * 画面の各セルにデータを埋め込む
  * 100 -- 移動できるセル
@@ -360,6 +376,8 @@ function setupJoutai() {
 	for (j = 0; j < 12; j++) {
 		joutai[21][j] = 99;	
 	}
+
+	// printJoutai();
 }
 
 function gamekaishi() {
