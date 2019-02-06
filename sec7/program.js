@@ -215,23 +215,27 @@ function otoOchiru() {
  * All Green -- true
  *     Red   -- false
  */
-function kakunin(col, row) {
+function kakunin(col, row, syurui, muki) {
 	var x, y;
 	var hantei = true;
 	var thisBlock = block[syurui][muki];
 
-	for (y = row; y < row + 4; y++) {
-		for (x = col; x < col + 4; x++) {
-			console.log(joutai[y][x]);	
-			console.log(thisBlock[y][x]);
-			if ((joutai[y][x] !== 100) &&
+	// console.log(thisBlock);
+
+	console.log('---------------------------------');
+	for (y = 0; y < 4; y++) {
+		for (x = 0; x < 4; x++) {
+			console.log('y:' + (y + row) +
+				' x:' + (x + col) + 
+				' v:' + thisBlock[y][x]);
+			if ((joutai[row + y][col + x] !== 100) &&
 				(thisBlock[y][x] === 1)){
 				// ここへは移動できない
 				hantei = false;
 			}
 		}
 	}
-	console.log(hantei);
+	// console.log('hantei' + hantei);
 	return hantei;
 
 	/*
@@ -270,7 +274,7 @@ function ugokasu(e) {
 
 	switch (e.keyCode) {
 		case 37:
-			if (kakunin(col - 1, row)) {
+			if (kakunin(col - 1, row, syurui, muki)) {
 				col = col - 1;	
 				otoKaiten();
 			}
@@ -283,13 +287,13 @@ function ugokasu(e) {
 	        otoKaiten();
 			break;
 		case 39:
-			if (kakunin(col + 1, row)) {
-				col = col + 2;
+			if (kakunin(col + 1, row, syurui, muki)) {
+				col = col + 1;
 				otoKaiten();
 			}
             break;
 		case 40:
-			if (kakunin(col, row + 1)) {
+			if (kakunin(col, row + 1, syurui, muki)) {
 				row = row + 1;
 				otoKaiten();
 			}
