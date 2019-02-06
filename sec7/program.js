@@ -81,9 +81,9 @@ var block = [
     ],
     [      // block3
            [
+               [0, 0, 0, 0],
                [1, 1, 1, 0],
                [0, 0, 1, 0],
-               [0, 0, 0, 0],
                [0, 0, 0, 0]
            ],
            [
@@ -227,12 +227,16 @@ function kakunin(col, row, syurui, muki) {
 		for (x = 0; x < 4; x++) {
 			console.log('y:' + (y + row) +
 				' x:' + (x + col) + 
-				' v:' + thisBlock[y][x]);
-			if ((joutai[row + y][col + x] !== 100) &&
-				(thisBlock[y][x] === 1)){
-				// ここへは移動できない
-				hantei = false;
-			}
+				        ' v:' + thisBlock[y][x]);
+            if (row + y < 23 && col + x < 13) {
+			    if ((joutai[row + y][col + x] !== 100) &&
+				    (thisBlock[y][x] === 1)){
+				    // ここへは移動できない
+				    hantei = false;
+			    }
+            } else {
+                hantei = false;
+            }
 		}
 	}
 	// console.log('hantei' + hantei);
@@ -345,7 +349,7 @@ function kaku(cv, x, y, syurui, muki) {
 function printJoutai() {
 	var i, j;
 
-	for (i = 0; i < 22; i++) {
+	for (i = 0; i < 23; i++) {
 		for (j = 0; j < 12; j++) {
 			 console.log(joutai[i][j]);
 		}
@@ -361,24 +365,25 @@ function printJoutai() {
 function setupJoutai() {
 	var i, j;
 
-	joutai = new Array(22);
-	for (i = 0; i < 22; i++) {
+	joutai = new Array(23);
+	for (i = 0; i < 23; i++) {
 		joutai[i] = new Array(12);
 		for (j = 0; j < 12; j++) {
 			joutai[i][j] = 100;
 		}
 	}
 	// 左壁
-	for (i = 0; i < 22; i++) {
+	for (i = 0; i < 23; i++) {
 		joutai[i][0] = 99;
 	}
 	// 右壁
-	for (i = 0; i < 22; i++) {
+	for (i = 0; i < 23; i++) {
 		joutai[i][11] = 99;
 	}
 	// 下壁
 	for (j = 0; j < 12; j++) {
-		joutai[21][j] = 99;	
+		joutai[21][j] = 99;
+        joutai[22][j] = 99;
 	}
 
 	// printJoutai();
