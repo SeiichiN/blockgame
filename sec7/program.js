@@ -211,24 +211,31 @@ function otoOchiru() {
     document.getElementById('ochiru').play();
 }
 
+function prPos(col, y, x) {
+	var migi;
+	migi = col + x;
+	console.log('col:' + col + ' y:' + y + ' x:' + x + ' migi:' + migi);
+}
+
+
 function mukicheck(col, row, syurui, muki) {
-	var x, y, yoko;
+	var x, y;
 	var thisBlock = block[syurui][muki];
 	for (y = 0; y < 4; y++) {
 		for (x = 0; x < 4; x++) {
-			yoko = col + x;
 			if (thisBlock[y][x] === 1) {
 				if (col < 1) {
-					col = 1;
+					prPos(col, y, x);
+					return -1;
 				}
-				if (yoko > 10) {
-					console.log('yoko:' + yoko);
-					col = col - 1;
-					return;
+				if (col + x > 10) {
+					prPos(col, y, x);
+					return 1;
 				}
 			}
 		}
 	}
+	return 0;
 }
 
 /**
@@ -323,13 +330,18 @@ function ugokasu(e) {
 				col = col - 1;	
 				otoKaiten();
 			}
+			prPos(col, 0, row);
 			break;
 		case 38:
             muki = muki + 1;
             if (muki > 3) {
                 muki = 0;
             }
-			mukicheck(col, row, syurui, muki);
+			if (mukicheck(col, row, syurui, muki) > 0) {
+				col = col - 1;
+			} else if (mukicheck(col, row, syurui, muki) < 0) {
+				col = col + 1;
+			}
 	        otoKaiten();
 			break;
 		case 39:
