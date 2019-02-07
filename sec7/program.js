@@ -211,6 +211,26 @@ function otoOchiru() {
     document.getElementById('ochiru').play();
 }
 
+function mukicheck(col, row, syurui, muki) {
+	var x, y, yoko;
+	var thisBlock = block[syurui][muki];
+	for (y = 0; y < 4; y++) {
+		for (x = 0; x < 4; x++) {
+			yoko = col + x;
+			if (thisBlock[y][x] === 1) {
+				if (col < 1) {
+					col = 1;
+				}
+				if (yoko > 10) {
+					console.log('yoko:' + yoko);
+					col = col - 1;
+					return;
+				}
+			}
+		}
+	}
+}
+
 /**
  * All Green -- true
  *     Red   -- false
@@ -222,24 +242,45 @@ function kakunin(col, row, syurui, muki) {
 
 	// console.log(thisBlock);
 
-	console.log('---------------------------------');
+	// console.log('---------------------------------');
+	// for (y = 0; y < 4; y++) {
+	// 	for (x = 0; x < 4; x++) {
+	// 		console.log('y:' + (y + row) +
+	// 			' x:' + (x + col) + 
+	// 			        ' v:' + thisBlock[y][x]);
+    //         if (row + y < 23 && col + x < 13) {
+	// 		    if ((joutai[row + y][col + x] !== 100) &&
+	// 			    (thisBlock[y][x] === 1)){
+	// 			    // ここへは移動できない
+	// 			    hantei = false;
+	// 		    }
+    //         } else {
+    //             hantei = false;
+    //         }
+	// 	}
+	// }
+	// console.log('hantei' + hantei);
+	
 	for (y = 0; y < 4; y++) {
 		for (x = 0; x < 4; x++) {
-			console.log('y:' + (y + row) +
-				' x:' + (x + col) + 
-				        ' v:' + thisBlock[y][x]);
-            if (row + y < 23 && col + x < 13) {
-			    if ((joutai[row + y][col + x] !== 100) &&
-				    (thisBlock[y][x] === 1)){
-				    // ここへは移動できない
-				    hantei = false;
-			    }
-            } else {
-                hantei = false;
-            }
+			if (thisBlock[y][x] === 1) {
+				if (col < 1) {
+					col = col + 1;
+					return false;
+		        }	
+				if (col + x > 11) {
+					col = col - 1;
+					return false;
+				}
+				//if (row + y > 21) {
+				//	return false;
+				//}
+				if (joutai[row + y][col + x] !== 100) {
+					return false;
+				}
+			}
 		}
 	}
-	// console.log('hantei' + hantei);
 	return hantei;
 
 	/*
@@ -288,6 +329,7 @@ function ugokasu(e) {
             if (muki > 3) {
                 muki = 0;
             }
+			mukicheck(col, row, syurui, muki);
 	        otoKaiten();
 			break;
 		case 39:
@@ -351,7 +393,7 @@ function printJoutai() {
 
 	for (i = 0; i < 23; i++) {
 		for (j = 0; j < 12; j++) {
-			 console.log(joutai[i][j]);
+			 // console.log(joutai[i][j]);
 		}
 	}
 }
