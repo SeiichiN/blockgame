@@ -224,7 +224,7 @@ function mukicheck(col, row, syurui, muki) {
 	for (y = 0; y < 4; y++) {
 		for (x = 0; x < 4; x++) {
 			if (thisBlock[y][x] === 1) {
-				if (col < 1) {
+				if (col + x < 1) {
 					prPos(col, y, x);
 					return -1;
 				}
@@ -271,7 +271,7 @@ function kakunin(col, row, syurui, muki) {
 	for (y = 0; y < 4; y++) {
 		for (x = 0; x < 4; x++) {
 			if (thisBlock[y][x] === 1) {
-				if (col < 1) {
+				if (col + x < 1) {
 					col = col + 1;
 					return false;
 		        }	
