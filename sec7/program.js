@@ -197,18 +197,16 @@ var syurui;  // ブロックの種類
 var muki;    // ブロックの向き
 
 var joutai;// 画面の各セルのデータ
-/*
-var joutai = new Array(22);
-for (var i = 0; i < 22; i++) {
-	joutai[i] = new Array(12);
-}
-*/
+var nextBlock = {syurui: 0, muki: 0};
 
 function otoKaiten() {
 	document.getElementById('kaiten').play();
 }
 function otoOchiru() {
     document.getElementById('ochiru').play();
+}
+function otoDon() {
+    document.getElementById('don').play();
 }
 
 function prPos(col, y, x) {
@@ -238,28 +236,41 @@ function kakunin(col, row, syurui, muki) {
 					col = col - 1;
 					return false;
 				}
-				//if (row + y > 21) {
-				//	return false;
-				//}
 				if (joutai[row + y][col + x] !== 100) {
 					return false;
 				}
 			}
 		}
 	}
+    
 	return hantei;
 
-	/*
-	var cells = joutai.find((ele) => {
-		ele.find((ele2) => ele2 === 100);
-	});
-	console.log(cells);
-	if (cells.length === 16) {
-		return true;
-	} else {
-		return false;
-	}
-	*/
+}
+
+/**
+ * ブロックが底についたときの処理
+ * 各セルにそのブロックのsyuruiを埋め込む。
+ * syurui -- 0...6
+ */
+function atBottom(col, row, syurui, muki) {
+    var thisBlock = block[syurui][muki];
+    var x, y;
+
+    for (y = 0; y < 4; y++) {
+        for (x = 0; x < 4; x++) {
+            if (thisBlock[y][x] === 1) {
+                joutai[row + y][col + x] = syurui;
+            }
+        }
+    }
+}
+
+function changeToNextBlock() {
+    col = Math.floor(Math.random() * 7) + 1;
+    row = 0;
+    syurui = nextBlock.syurui;
+    muki = nextBlock.muki;
+//    console.log('col:' + col + ' row:' + row + ' syurui:' + syurui + ' muki:' + muki);
 }
 
 function makeNext() {
@@ -271,7 +282,8 @@ function makeNext() {
 	// 表示する前に消す
 	nextCV.clearRect(0, 0, 79, 79);
 	kaku(nextCV, 0, 0, nextSyurui, nextMuki);
-
+    nextBlock.syurui = nextSyurui;
+    nextBlock.muki = nextMuki;
 }
 /**
  * keyCode: left 37  up 38   right 39  down 40
@@ -311,8 +323,16 @@ function ugokasu(e) {
 		case 40:
 			if (kakunin(col, row + 1, syurui, muki)) {
 				row = row + 1;
-				otoKaiten();
+				otoOchiru();
 			}
+            // 底についた
+            else {
+                kaku(cv, col, row, syurui, muki);
+                otoDon();
+                atBottom(col, row, syurui, muki);
+                changeToNextBlock();
+                makeNext();
+            }
 			break;
 	}
 
