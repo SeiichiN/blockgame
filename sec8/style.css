@@ -41,3 +41,19 @@ footer {
     left: 20px;
 }
 
+#dataarea {
+    position: absolute;
+    left: 500px;
+    top: 100px;
+}
+
+#dataarea td {
+    border: solid 1px #aaa;
+    width: 20px;
+    height: 20px;
+}
+
+#dataarea table {
+    border-collapse: collapse;
+}
+

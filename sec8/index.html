@@ -8,19 +8,23 @@
         
     </head>
 	<body onload="hajime()" onkeydown="ugokasu(event)">
-        <div class="header">
-            <h1>落ちものパズル</h1>
-            <div class="score">
-                スコア:<span id="tokuten">0</span>
+        <div id="playarea">
+            <div class="header">
+                <h1>落ちものパズル</h1>
+                <div class="score">
+                    スコア:<span id="tokuten">0</span>
+                </div>
             </div>
+            <canvas id="back" width="240" height="440"></canvas>
+            <canvas id="game" width="240" height="440"></canvas>
+            <canvas id="tsugi" width="80" height="80"></canvas>
+            <button id="kaishibtn" onclick="gamekaishi()">ゲーム<br>スタート</button>
+            <footer>
+                <small>&copy; 2019 Seiichi Nukayama</small>
+            </footer>
+        </div><!-- #playarea -->
+        <div id="dataarea">
         </div>
-        <canvas id="back" width="240" height="440"></canvas>
-        <canvas id="game" width="240" height="440"></canvas>
-        <canvas id="tsugi" width="80" height="80"></canvas>
-        <button id="kaishibtn" onclick="gamekaishi()">ゲーム<br>スタート</button>
-        <footer>
-            <small>&copy; 2019 Seiichi Nukayama</small>
-        </footer>
         <audio id="kaiten" preload="auto" src="oto/kaiten.mp3"></audio>
         <audio id="ochiru" preload="auto" src="oto/ochiru.mp3"></audio>
         <audio id="don" preload="auto" src="oto/don.mp3"></audio>

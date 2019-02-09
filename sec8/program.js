@@ -215,13 +215,70 @@ function prPos(col, y, x) {
 	console.log('col:' + col + ' y:' + y + ' x:' + x + ' migi:' + migi);
 }
 
-function checkHolizonalLine() {
-    var lineNo, colNo;
-    var length;
-
+function reRender() {
+    var cv = document.getElementById('game').getContext('2d');
     
+    cv.clearRect(20, 0, 219, 419);
+    // console.log('----------------------');
+    for (y = 0; y < 21; y++) {
+        for (x = 1; x < 11; x++) {
+            if (joutai[y][x] !== 100) {
+                // console.log('joutai y:' + y + ' x:' + x + ' j:' + joutai[y][x]);
+                cv.fillStyle = bcolor[joutai[y][x]];
+                cv.strokeStyle = '#333333';
+                cv.lineWidth = 3;
+                cv.fillRect(x * 20, y * 20, 20, 20);
+                cv.strokeRect(x * 20, y * 20, 20, 20);
+            }
+        }
+    }
 }
 
+function moveJoutai(y) {
+    var x;
+    if (y !== 0) {
+        joutai[y] = joutai[y - 1];
+
+        moveJoutai(y - 1);
+    }
+    for (x = 1; x < 11; x++) {
+        joutai[0][x] = 100;
+    }
+}
+
+function checkHolizonalLine() {
+    var lineNo = [];   // 横一列そろっている行の配列
+    var count;        // 100でないセルの数
+    var x, y;
+
+    // 1行ごとに100でないセルの数を数える
+    for (y = 0; y < 21; y++) {
+        count = 0;
+        for (x = 1; x < 11; x ++) {
+            if (joutai[y][x] !== 100) {
+                count++;
+            }
+        }
+
+        // もし、10個のセル全部が100でなかったら、
+        if (count === 10) {
+            lineNo.push(y);   // その行番号をlineNoに入れる。
+        }
+    }
+
+    // lineNoには、そろっている行の番号が配列ではいっている。
+    // 上の行から順番に、そろっている行を削除し、上の行を下につめる。
+    if (lineNo.length > 0) {
+        lineNo.forEach((ele) => {
+            if (ele !== 0) {
+                moveJoutai(ele);
+            }
+        });
+        printJoutai();
+        reRender();
+    }
+    
+}
 
 /**
  * All Green -- true
@@ -337,6 +394,7 @@ function ugokasu(e) {
                 kaku(cv, col, row, syurui, muki);
                 otoDon();
                 atBottom(col, row, syurui, muki);
+                checkHolizonalLine();
                 changeToNextBlock();
                 makeNext();
             }
@@ -386,14 +444,35 @@ function kaku(cv, x, y, syurui, muki) {
 }
 
 function printJoutai() {
-	var i, j;
-
-	for (i = 0; i < 23; i++) {
-		for (j = 0; j < 12; j++) {
-			 // console.log(joutai[i][j]);
+	var y, x;
+    var rows = [];
+    var table = document.getElementsByTagName('table');
+    
+	for (y = 0; y < 21; y++) {
+        for (x = 1; x < 11; x++) {
+		    table[0].rows[y].cells[x - 1].innerText = joutai[y][x];
 		}
 	}
 }
+
+function createTable() {
+	var y, x;
+    var rows = [];
+    var table = document.createElement('table');
+    
+	for (y = 0; y < 21; y++) {
+        rows.push(table.insertRow(-1));
+        for (x = 1; x < 11; x++) {
+            cell = rows[y].insertCell(-1);
+            cell.appendChild(document.createTextNode('.'));
+		    // table.rows[y].cells[x - 1].innerText = joutai[y][x];
+        
+			// console.log('y:' + y + ' x:' + x + ' j:' + joutai[y][x]);
+		}
+	}
+    document.getElementById('dataarea').appendChild(table);
+}
+
 
 /**
  * 画面の各セルにデータを埋め込む
@@ -452,6 +531,7 @@ function gamekaishi() {
 
 	makeNext();
 
+    createTable();
 }
 
 function hajime() {
