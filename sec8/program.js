@@ -199,6 +199,8 @@ var muki;    // ブロックの向き
 var joutai;// 画面の各セルのデータ
 var nextBlock = {syurui: 0, muki: 0};
 
+var tensu;  // 得点
+
 function otoKaiten() {
 	document.getElementById('kaiten').play();
 }
@@ -237,13 +239,33 @@ function reRender() {
 function moveJoutai(y) {
     var x;
     if (y !== 0) {
-        joutai[y] = joutai[y - 1];
+        for (x = 1; x < 11; x++) {
+            joutai[y][x] = joutai[y - 1][x];
+        }
 
         moveJoutai(y - 1);
     }
     for (x = 1; x < 11; x++) {
         joutai[0][x] = 100;
     }
+}
+
+function tokuten(num) {
+    switch (num) {
+        case 1:
+            tensu = tensu + 10;
+            break;
+        case 2:
+            tensu = tensu + 50;
+            break;
+        case 3:
+            tensu = tensu + 100;
+            break;
+        case 4:
+            tensu = tensu + 500;
+            break;
+    }
+    document.getElementById('tokuten').textContent = tensu;
 }
 
 function checkHolizonalLine() {
@@ -269,6 +291,7 @@ function checkHolizonalLine() {
     // lineNoには、そろっている行の番号が配列ではいっている。
     // 上の行から順番に、そろっている行を削除し、上の行を下につめる。
     if (lineNo.length > 0) {
+        tokuten(lineNo.length);
         lineNo.forEach((ele) => {
             if (ele !== 0) {
                 moveJoutai(ele);
@@ -518,6 +541,8 @@ function gamekaishi() {
 	// 画面を消す
 	cg.clearRect(0, 0, 239, 439);
 
+    tensu = 0;  // 得点をゼロにする
+    
 	// 画面データをつくる
 	setupJoutai();
 
