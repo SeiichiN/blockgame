@@ -1,0 +1,50 @@
+\documentclass[dvipdfmx]{jsarticle}
+
+\include{begin}
+
+\section{落下物を描く}
+
+program.js に 以下のように gamekaishi()関数を追加します。
+
+\begin{lstlisting}
+ function gamekaishi() {
+    // Canvasを取得
+    const gamegamen = document.getElementById('game');
+
+    const cg =gamegamen.getContext('2d');
+
+	let x = 4;
+	let y = 0;
+
+	cg.fillStyle = '#cc00cc';
+	cg.strokeStyle = '#aaaaaa';
+
+	cg.fillRect(x * 20, y, 20, 20);
+	cg.strokeRect(x * 20, y, 20, 20);
+
+	cg.fillRect((x + 1) * 20, y, 20, 20);
+	cg.strokeRect((x + 1) * 20, y, 20, 20);
+
+	cg.fillRect((x + 2)   * 20, y, 20, 20);
+	cg.strokeRect((x + 2) * 20, y, 20, 20);
+
+	cg.fillRect((x  + 1) * 20, (y + 1) * 20, 20, 20);
+	cg.strokeRect((x + 1) * 20, (y + 1) * 20, 20, 20);
+}
+\end{lstlisting}
+
+そして、このgamekaishi()関数を以下のタグのonclick属性に指定します。
+
+\fbox{\textless body onload=''hajime()`` onclick=''gameKaishi()``\textgreater}
+
+\fbox{\textless button id=''kaishibtn'' onclick=''gamekaishi()``\textgreater
+ゲーム\textless br\textgreater スタート\textless /button\textgreater}
+
+``ゲームスタート''をクリックするか、画面をクリックすると、画面上部に凸型の
+図形が現れます。
+
+\includegraphics[width=5cm]{game3.png}
+
+\include{end}
+
+%% 修正時刻： Sun Jun 21 11:46:40 2020
