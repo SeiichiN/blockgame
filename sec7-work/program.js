@@ -193,8 +193,10 @@ const bcolor = ['#CC00CC', '#FFA500', '#CC0000',
 let col;  // blockのx座標 1..10
 let row;  // blockのy座標 0..21
 
-let syurui;
-let muki;
+let syurui;     // ブロックの種類
+let muki;       // ブロックの向き
+
+let tensu;   // 得点
 
 // 画面の状態を記憶しておく
 const joutai = new Array(23);
@@ -211,6 +213,117 @@ function otoOchiru() {
 function otoDon() {
   document.getElementById('don').play();
 }
+
+/**
+ * 再描画処理
+ * 画面データ(joutai配列)をもとにして再描画する。
+ */
+function reRender() {
+    const cv = document.getElementById('game').getContext('2d');
+    
+    cv.clearRect(20, 0, 219, 419);
+    // console.log('----------------------');
+    for (y = 0; y < 21; y++) {
+        for (x = 1; x < 11; x++) {
+            if (joutai[y][x] !== 100) {
+                // console.log('joutai y:' + y + ' x:' + x + ' j:' + joutai[y][x]);
+                cv.fillStyle = bcolor[joutai[y][x]];
+                cv.strokeStyle = '#333333';
+                cv.lineWidth = 3;
+                cv.fillRect(x * 20, y * 20, 20, 20);
+                cv.strokeRect(x * 20, y * 20, 20, 20);
+            }
+        }
+    }
+}
+
+/**
+ * そろっている行を削除して上の行をつめる
+ * 引数:
+ *   y -- 行の番号
+ */
+function moveJoutai(y) {
+  let x;
+  
+  if (y !== 0) {
+    for (x = 1; x < 11; x++) {
+      // 一つ上のセルの内容をコピーする
+      joutai[y][x] = joutai[y - 1][x];
+    }
+    // 再帰処理。
+    // すなわち、一つ上の行にも同じことをする。
+    // ただ、第0行はしない。そこでこの再帰は終わる。
+    moveJoutai(y - 1);
+  }
+  // 第0行は100で埋める。
+  // なぜなら第0行は新しく生み出された行だから。
+  for (x = 1; x < 11; x++) {
+    joutai[0][x] = 100;
+  }
+}
+
+/**
+ * 得点処理
+ * そろっている行が多いほど得点が上がる。
+ */
+function tokuten(num) {
+    switch (num) {
+        case 1:
+            tensu = tensu + 10;
+            break;
+        case 2:
+            tensu = tensu + 50;
+            break;
+        case 3:
+            tensu = tensu + 100;
+            break;
+        case 4:
+            tensu = tensu + 500;
+            break;
+    }
+    document.getElementById('tokuten').textContent = tensu;
+}
+
+/**
+ * 横1列そろったら行う処理
+ * そろっているかどうかを確認する。
+ * そろってたら、そろっている行数分、得点する。
+ * そろっている行を削除して再描画。
+ */
+function checkHorizontalLine() {
+    const lineNo = [];   // 横一列そろっている行の配列
+    let count;        // 100でないセルの数
+    let x, y;
+
+    // 1行ごとに100でないセルの数を数える
+    for (y = 0; y < 21; y++) {
+        count = 0;
+        for (x = 1; x < 11; x ++) {
+            if (joutai[y][x] !== 100) {
+                count++;
+            }
+        }
+
+        // もし、10個のセル全部が100でなかったら、
+        if (count === 10) {
+            lineNo.push(y);   // その行番号をlineNoに入れる。
+        }
+    }
+
+    // lineNoには、そろっている行の番号が配列ではいっている。
+    // 上の行から順番に、そろっている行を削除し、上の行を下につめる。
+    if (lineNo.length > 0) {
+        tokuten(lineNo.length);
+        lineNo.forEach((ele) => {
+            if (ele !== 0) {
+                moveJoutai(ele);
+            }
+        });
+        printJoutai();
+        reRender();
+    }
+}
+
 
 /**
  * kakunin -- 移動回転が可能かどうかを判定する
@@ -355,6 +468,8 @@ function ugokasu(e) {
       otoDon();  // 底についた音
       // 画面データの配列 joutai にブロックの種類を埋め込む
       atBottom(col, row, syurui, muki);
+      // そろっている行があれば、得点、削除、再描画を行う。
+      checkHorizontalLine();
       printJoutai();
       changeToNextBlock();
       makeNext();
@@ -520,4 +635,4 @@ function hajime() {
   }
 }
 
-// 修正時刻： Sun Jun 21 19:10:59 2020
+// 修正時刻： Mon Jun 22 08:25:00 2020
