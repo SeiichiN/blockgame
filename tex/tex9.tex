@@ -1,0 +1,142 @@
+\documentclass[dvipdfmx]{jsarticle}
+
+\include{begin}
+
+\section{タイマーでユーザーを忙せる}
+
+まず、200行目あたりの let でいくつかの変数を定義しているところに、以下の変数定義を
+書き加えてください。
+
+\begin{lstlisting}
+ let gameOn;        // ゲームが実行中である
+ let jikan;         // タイマー
+\end{lstlisting}
+
+gamehaishi()関数の上に以下の関数を書き加えてください。
+
+\begin{lstlisting}
+ /**
+ * ユーザーが何もしなかったら、自動的に下向き矢印キーが
+ * 押されたと同じことになる。しかも jikan はだんだんと
+ * 短くなる。50ミリ秒以下になると1000ミリ秒に戻る。
+ */
+function jikandeugokasu() {
+  if (gameOn) {
+    // 自動で下向きキーが押されるのと同じ。
+    const ev = { keyCode: 40 };
+    ugokasu(ev);
+
+    jikan = jikan - 2;
+    if (jikan < 50) {
+      jikan = 1000;
+    }
+    document.getElementById('jikan').textContent = jikan;
+    setTimeout(jikandeugokasu, jikan);
+  }
+}
+\end{lstlisting}
+
+そして、gamekaishi()関数の cg.clearRect(0, 0, 239, 439) の後に以下の記述を
+書き加えてください。
+
+\begin{lstlisting}
+   // 画面を消す
+  cg.clearRect(0, 0, 239, 439);
+
+  // 得点をゼロにする
+  tensu = 0;
+
+  // ゲーム実行中にする
+  gameOn = true;
+
+  // タイマーを1秒にセット
+  jikan = 1000;
+
+  // 1秒ごとに jikandeugoku() を動かす。
+  setTimeout( jikandeugokasu, jikan );
+\end{lstlisting}
+
+そして、index.html の \verb!<footer>!の中に以下の記述を加えてください。
+
+\begin{lstlisting}
+  <footer>
+    <small>&copy; 2019 Seiichi Nukayama</small>
+    <div class="timer"><span id="jikan"></span>/1000 秒</div>    <!-- <== -->
+  </footer>
+\end{lstlisting}
+
+これでブラウザで動かしてみると、ゲーム開始以後は、何もしなくても勝手にブロックが
+落ちてきます。
+
+タイマーがフッターあたりに表示されています。
+
+\subsection{ゲームオーバー処理}
+
+ゲームオーバーの判定は、次のブロックを置く処理をしているところで行います。
+以下のように changeToNextBlock()関数に追加してください。
+
+\begin{lstlisting}
+function changeToNextBlock() {
+  ... (省略) ...
+  muki = nextBlock.muki;
+
+  // 新しいブロックが置けるかどうかを確認して、
+  // もし置けなかったら、ゲームオーバー
+  if (! kakunin(col, row, syurui, muki)) {
+    otoGameover();
+    alert('ゲームオーバー');
+    gameOn = false;
+  }
+}
+\end{lstlisting}
+
+また、以下のように音を鳴らす関数も追加しておいてください。
+
+\begin{lstlisting}
+function otoGameover() {
+    document.getElementById('gameover').play();
+}
+function otoKieru() {
+    document.getElementById('kieru').play();
+}
+function otoZenbu() {
+    document.getElementById('zenbu').play();
+} 
+\end{lstlisting}
+
+そして、得点処理のところに音を追加します。
+
+\begin{lstlisting}
+ /**
+ * 得点処理
+ * そろっている行が多いほど得点が上がる。
+ */
+function tokuten(num) {
+  switch (num) {
+  case 1:
+    tensu = tensu + 10;
+    otoKieru();                    // <===
+    break;
+  case 2:
+    tensu = tensu + 50;
+    otoKieru();                    // <===
+    break;
+  case 3:
+    tensu = tensu + 100;
+    otoKieru();                    // <===
+    break;
+  case 4:
+    tensu = tensu + 500;
+    otoZenbu();                    // <===
+    break;
+  }
+  document.getElementById('tokuten').textContent = tensu;
+}
+\end{lstlisting}
+
+
+以上で完成です。
+
+\include{end}
+
+%% 修正時刻： Mon Jun 22 19:11:16 2020

@@ -1,5 +1,110 @@
-// program.js
+\documentclass[dvipdfmx]{jsarticle}
 
+\include{begin}
+
+\section{全コード}
+
+\begin{lstlisting}[caption=index.html]
+ <!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <title>game</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="program.js"></script>
+        
+    </head>
+	<body onload="hajime()" onkeydown="ugokasu(event)">
+        <div id="playarea">
+            <div class="header">
+                <h1>落ちものパズル</h1>
+                <div class="score">
+                    スコア:<span id="tokuten">0</span>
+                </div>
+            </div>
+            <canvas id="back" width="240" height="440"></canvas>
+            <canvas id="game" width="240" height="440"></canvas>
+            <canvas id="tsugi" width="80" height="80"></canvas>
+            <button id="kaishibtn" onclick="gamekaishi()">ゲーム<br>スタート</button>
+            <footer>
+                <small>&copy; 2019 Seiichi Nukayama</small>
+                <div class="timer"><span id="jikan"></span>/1000 秒</div>
+            </footer>
+        </div><!-- #playarea -->
+        <div id="dataarea">
+        </div>
+        <audio id="kaiten" preload="auto" src="oto/kaiten.mp3"></audio>
+        <audio id="ochiru" preload="auto" src="oto/ochiru.mp3"></audio>
+        <audio id="don" preload="auto" src="oto/don.mp3"></audio>
+        <audio id="kieru" preload="auto" src="oto/kieru.mp3"></audio>
+        <audio id="zenbu" preload="auto" src="oto/zenbu.mp3"></audio>
+        <audio id="gameover" preload="auto" src="oto/gameover.mp3"></audio>
+    </body>
+</html>
+\end{lstlisting}
+
+\begin{lstlisting}[caption=style.css]
+ @charset "utf-8";
+
+.header {
+    position: absolute;
+    left: 20px;
+    top: 10px;
+}
+.score {
+    width: 380px;
+}
+#back,
+#game {
+    position: absolute;
+    left: 20px;
+    top: 150px;
+}
+#back {
+    background-color: #000;
+}
+#game {
+    background-color: transparent;
+}
+#tsugi {
+    position: absolute;
+    left: 300px;
+    top: 150px;
+    background-color: #000;
+}
+#kaishibtn {
+    position: absolute;
+    left: 300px;
+    top: 300px;
+    width: 80px;
+    height: 50px;
+    padding: 0;
+    font-size: 0.8em;
+}
+footer {
+    position: absolute;
+    top: 600px;
+    left: 20px;
+}
+
+#dataarea {
+    position: absolute;
+    left: 500px;
+    top: 100px;
+}
+
+#dataarea td {
+    border: solid 1px #aaa;
+    width: 20px;
+    height: 20px;
+}
+
+#dataarea table {
+    border-collapse: collapse;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption=program.js]
 const block = [
   [      // block0
     [
@@ -198,6 +303,9 @@ let muki;       // ブロックの向き
 
 let tensu = 0;   // 得点
 
+let gameOn;     // ゲームが実行中である
+let jikan;      // タイマー
+
 // 画面の状態を記憶しておく
 const joutai = new Array(23);
 
@@ -212,6 +320,15 @@ function otoOchiru() {
 }
 function otoDon() {
   document.getElementById('don').play();
+}
+function otoGameover() {
+    document.getElementById('gameover').play();
+}
+function otoKieru() {
+    document.getElementById('kieru').play();
+}
+function otoZenbu() {
+    document.getElementById('zenbu').play();
 }
 
 /**
@@ -267,21 +384,25 @@ function moveJoutai(y) {
  * そろっている行が多いほど得点が上がる。
  */
 function tokuten(num) {
-    switch (num) {
-        case 1:
-            tensu = tensu + 10;
-            break;
-        case 2:
-            tensu = tensu + 50;
-            break;
-        case 3:
-            tensu = tensu + 100;
-            break;
-        case 4:
-            tensu = tensu + 500;
-            break;
-    }
-    document.getElementById('tokuten').textContent = tensu;
+  switch (num) {
+  case 1:
+    tensu = tensu + 10;
+    otoKieru();
+    break;
+  case 2:
+    tensu = tensu + 50;
+    otoKieru();
+    break;
+  case 3:
+    tensu = tensu + 100;
+    otoKieru();
+    break;
+  case 4:
+    tensu = tensu + 500;
+    otoZenbu();
+    break;
+  }
+  document.getElementById('tokuten').textContent = tensu;
 }
 
 /**
@@ -396,6 +517,14 @@ function changeToNextBlock() {
   row = 0;
   syurui = nextBlock.syurui;
   muki = nextBlock.muki;
+
+  // 新しいブロックが置けるかどうかを確認して、
+  // もし置けなかったら、ゲームオーバー
+  if (! kakunin(col, row, syurui, muki)) {
+    otoGameover();
+    alert('ゲームオーバー');
+    gameOn = false;
+  }
 }
 
 /**
@@ -568,6 +697,27 @@ function setupJoutai() {
   }
 }
 
+/**
+ * ユーザーが何もしなかったら、自動的に下向き矢印キーが
+ * 押されたと同じことになる。しかも jikan はだんだんと
+ * 短くなる。50ミリ秒以下になると1000ミリ秒に戻る。
+ */
+function jikandeugokasu() {
+  if (gameOn) {
+    // 実行中
+    const ev = { keyCode: 40 };
+    ugokasu(ev);
+
+    jikan = jikan - 2;
+    if (jikan < 50) {
+      jikan = 1000;
+    }
+    document.getElementById('jikan').textContent = jikan;
+    setTimeout(jikandeugokasu, jikan);
+  }
+}
+
+
 function gamekaishi() {
   // Canvasを取得
   const gamegamen = document.getElementById('game');
@@ -576,6 +726,18 @@ function gamekaishi() {
 
   // 画面を消す
   cg.clearRect(0, 0, 239, 439);
+
+  // 得点をゼロにする
+  tensu = 0;
+
+  // ゲーム実行中にする
+  gameOn = true;
+
+  // タイマーを1秒にセット
+  jikan = 1000;
+
+  // 1秒ごとに jikandeugoku() を動かす。
+  setTimeout( jikandeugokasu, jikan );
 
   // 画面データをつくる
   setupJoutai();
@@ -634,5 +796,11 @@ function hajime() {
 	x = x + 20;
   }
 }
+\end{lstlisting}
 
-// 修正時刻： Mon Jun 22 17:59:41 2020
+
+
+
+\include{end}
+
+%% 修正時刻： Mon Jun 22 20:40:40 2020
