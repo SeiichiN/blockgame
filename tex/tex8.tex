@@ -22,8 +22,161 @@
     printJoutai();
 \end{lstilsting}
 
+次に以下の記述を kakunin()関数の上に書き加えてください。
+
+
+\begin{lstlisting}
+/**
+ * 横1列そろったら行う処理
+ * そろっているかどうかを確認する。
+ * そろってたら、そろっている行数分、得点する。
+ * そろっている行を削除して再描画。
+ */
+ function checkHorizontalLine() {
+   const lineNo = [];   // 横一列そろっている行の配列
+   let count;        // 100でないセルの数
+   let x, y;
+
+   // 1行ごとに100でないセルの数を数える
+   for (y = 0; y < 21; y++) {
+     count = 0;
+     for (x = 1; x < 11; x ++) {
+       if (joutai[y][x] !== 100) {
+         count++;
+       }
+     }
+
+     // もし、10個のセル全部が100でなかったら、
+     if (count === 10) {
+       lineNo.push(y);   // その行番号をlineNoに入れる。
+     }
+   }
+
+   // lineNoには、そろっている行の番号が配列ではいっている。
+   // 上の行から順番に、そろっている行を削除し、上の行を下につめる。
+   if (lineNo.length > 0) {
+     tokuten(lineNo.length);
+     lineNo.forEach((ele) => {
+       if (ele !== 0) {
+         moveJoutai(ele);
+       }
+     });
+     printJoutai();
+     reRender();
+   }
+ } 
+\end{lstlisting}
+
+この関数の中では、次の関数を呼び出しています。
+
+\begin{itemize}
+ \item tokuten()関数 -- 得点計算をする。
+ \item moveJoutai()関数 -- そろっている行を削除して、上の行をもってくる。
+ \item printJoutai()関数 -- 画面データの状態を見る。(すでに作成ずみ)
+ \item reRender()関数 -- 画面を再描画する。
+\end{itemize}
+
+次の記述を checkHorizontalLine()関数の上に書き加えます。
+
+\begin{lstlisting}
+/**
+ * 得点処理
+ * そろっている行が多いほど得点が上がる。
+ */
+ function tokuten(num) {
+   switch (num) {
+     case 1:
+     tensu = tensu + 10;
+     break;
+     case 2:
+     tensu = tensu + 50;
+     break;
+     case 3:
+     tensu = tensu + 100;
+     break;
+     case 4:
+     tensu = tensu + 500;
+     break;
+   }
+   document.getElementById('tokuten').textContent = tensu;
+ }
+\end{lstlisting}
+
+tensu という変数を使用していますので、それを作ります。\\
+let muki; // ブロックの向き \\
+と書かれているところのすぐ下に以下を記述してください。
+
+\fbox{let tensu; // 得点}
+
+次に moveJoutai()関数を書きます。
+これを tokuten()関数の上に書き加えてください。
+
+\begin{lstlisting}
+ /**
+ * そろっている行を削除して上の行をつめる
+ * 引数:
+ *   y -- 行の番号
+ */
+function moveJoutai(y) {
+  let x;
+  
+  if (y !== 0) {
+    for (x = 1; x < 11; x++) {
+      // 一つ上のセルの内容をコピーする
+      joutai[y][x] = joutai[y - 1][x];
+    }
+    // 再帰処理。
+    // すなわち、一つ上の行にも同じことをする。
+    // ただ、第0行はしない。そこでこの再帰は終わる。
+    moveJoutai(y - 1);
+  }
+  // 第0行は100で埋める。
+  // なぜなら第0行は新しく生み出された行だから。
+  for (x = 1; x < 11; x++) {
+    joutai[0][x] = 100;
+  }
+}
+\end{lstlisting}
+
+次に再描画を行う関数 reRender() を書きます。
+moveJoutai()関数の上に書き加えてください。
+
+\begin{lstlisting}
+ /**
+ * 再描画処理
+ * 画面データ(joutai配列)をもとにして再描画する。
+ */
+ function reRender() {
+   const cv = document.getElementById('game').getContext('2d');
+   
+   cv.clearRect(20, 0, 219, 419);
+   // console.log('----------------------');
+   for (y = 0; y < 21; y++) {
+     for (x = 1; x < 11; x++) {
+       if (joutai[y][x] !== 100) {
+         // console.log('joutai y:' + y + ' x:' + x + ' j:' + joutai[y][x]);
+         cv.fillStyle = bcolor[joutai[y][x]];
+         cv.strokeStyle = '#333333';
+         cv.lineWidth = 3;
+         cv.fillRect(x * 20, y * 20, 20, 20);
+         cv.strokeRect(x * 20, y * 20, 20, 20);
+       }
+     }
+   }
+ }
+\end{lstlisting}
+
+ブラウザで動かしてみます。
+横1列がそろうと、その行が削除され、上の行が降りてきます。
+複数行だと、複数行が削除されます。
+得点も表示されます。
+
+
+
+
+
 
 
 \include{end}
 
-%% 修正時刻： Mon Jun 22 09:41:25 2020
+%% 修正時刻： Mon Jun 22 13:38:33 2020
