@@ -8,9 +8,22 @@
 得点計算して、そろっているブロックを削除します。2列〜4列そろっていたら、
 その得点を計算して削除します。
 
+横1列そろっているたらの関数名を checkHorizontalLine() とします。
+それを ugokasu()関数の下向き矢印をチェックしている \verb!(case 40:)! の atBottom()関数を呼び出しているところの下に入れます。
+
+\begin{lstlisting}
+ function ugokasu(e) {
+  ... (省略) ...
+   case 40:
+    // 画面データの配列 joutai にブロックの種類を埋め込む
+    atBottom(col, row, syurui, muki);
+    // そろっている行があれば、得点、削除、再描画を行う。
+    checkHorizontalLine();                        // <=== これ
+    printJoutai();
+\end{lstilsting}
 
 
 
 \include{end}
 
-%% 修正時刻： Sun Jun 21 20:34:06 2020
+%% 修正時刻： Mon Jun 22 09:41:25 2020
